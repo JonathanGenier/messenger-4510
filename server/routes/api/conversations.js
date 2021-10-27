@@ -72,7 +72,6 @@ router.get("/", async (req, res, next) => {
       conversations[i] = convoJSON;
     }
 
-    // console.log("Fetching Conversations", conversations[0].messages)
     res.json(conversations);
   } catch (error) {
     next(error);
