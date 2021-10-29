@@ -1,5 +1,3 @@
-const moment = require("moment");
-
 const router = require("express").Router();
 const { User, Conversation, Message } = require("../../db/models");
 const { Op } = require("sequelize");
@@ -21,9 +19,9 @@ router.get("/", async (req, res, next) => {
         },
       },
       attributes: ["id"],
-      order: [[Message, "createdAt", "DESC"]],
+      order: [[Message, "createdAt", "ASC"]],
       include: [
-        { model: Message, order: ["createdAt", "DESC"] },
+        { model: Message, order: ["createdAt", "ASC"] },
         {
           model: User,
           as: "user1",
@@ -69,12 +67,9 @@ router.get("/", async (req, res, next) => {
         convoJSON.otherUser.online = false;
       }
 
-      // set properties for notification count and latest message preview 
-      convoJSON.latestMessageText = convoJSON.messages[0].text;
+      // set properties for notification count and latest message preview
+      convoJSON.latestMessageText = convoJSON.messages[convoJSON.messages.length - 1].text;
       conversations[i] = convoJSON;
-
-      // reverse messages so that messages appear in the right order in the chat
-      convoJSON.messages.sort((messageA, messageB) => moment(messageA.createdAt).isAfter(messageB.createdAt) ? 1 : -1)
     }
 
     res.json(conversations);
