@@ -5,6 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
 
+import UnreadCountBubble from './UnreadCountBubble'
+
 const useStyles = makeStyles((theme) => ({
   root: {
     borderRadius: 8,
@@ -22,12 +24,15 @@ const useStyles = makeStyles((theme) => ({
 const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
-  const { otherUser } = conversation;
+  const { otherUser, messages } = conversation;
 
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.username);
   };
 
+  // Get total of messages
+  // Get 
+  
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>
       <BadgeAvatar
@@ -37,6 +42,10 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
+      <UnreadCountBubble 
+        messages={messages} 
+        otherUser={otherUser}
+      />
     </Box>
   );
 };

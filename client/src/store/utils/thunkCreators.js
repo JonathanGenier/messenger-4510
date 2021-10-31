@@ -4,6 +4,7 @@ import {
   gotConversations,
   addConversation,
   setNewMessage,
+  updateMessages,
   setSearchedUsers,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
@@ -83,6 +84,11 @@ const saveMessage = async (body) => {
   return data;
 };
 
+const updateMessagesToDB = async (body) => {
+  await axios.put("/api/messages", body);
+  return
+}
+
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
@@ -97,17 +103,30 @@ export const postMessage = (body) => async (dispatch) => {
   try {
     const data = await saveMessage(body);
 
-  if (!body.conversationId) {
-    dispatch(addConversation(body.recipientId, data.message));
-  } else {
-    dispatch(setNewMessage(data.message));
-  }
+    if (!body.conversationId) {
+      dispatch(addConversation(body.recipientId, data.message));
+    } else {
+      dispatch(setNewMessage(data.message));
+    }
 
     sendMessage(data, body);
   } catch (error) {
     console.error(error);
   }
 };
+
+// format to send: { messages[], messagesToUpdate[], conversationId }
+// messages contains all the conversation's messages.
+export const putMessages = (body) => async (dispatch) => {
+  try {
+    const {messages, messagesToUpdate, conversationId} = body
+
+    await updateMessagesToDB(messagesToUpdate);
+    dispatch(updateMessages(messages, conversationId))
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
@@ -117,3 +136,5 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
     console.error(error);
   }
 };
+
+
