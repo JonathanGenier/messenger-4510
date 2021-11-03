@@ -1,8 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box, Typography } from "@material-ui/core";
+import { theme } from "../../themes/theme";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
@@ -24,22 +25,13 @@ const useStyles = makeStyles(() => ({
 
 const UnreadCountBubble = (props) => {
   const classes = useStyles();
-  const { messages, otherUser } = props
-
-  let unreadCount = 0
-  for (let i = 0; i < messages.length; i++) {
-    if (!messages[i].read && messages[i].senderId === otherUser.id) {
-      unreadCount++
-    }
-  }
-
-  if (unreadCount === 0)
-    return (<></>)
+  const { conversation } = props
 
   return (
+    conversation.unread !== undefined && conversation.unread !== 0 && 
     <Box className={classes.root}>
       <Box className={classes.bubble}>
-        <Typography className={classes.text}>{unreadCount}</Typography>
+        <Typography className={classes.text}>{conversation.unread}</Typography>
       </Box>
     </Box>
   );

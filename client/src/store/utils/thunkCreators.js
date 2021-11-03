@@ -73,6 +73,28 @@ export const logout = (id) => async (dispatch) => {
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
+
+    // Count the unread messages for each conversations
+    if (data && data.length > 0) {
+      data.forEach(convo => {
+        convo.unread = 0
+        convo.otherUser.unread = 0
+
+        convo.messages.forEach(message => {
+
+          // Unread messages for current user
+          if (message.senderId === convo.otherUser.id && !message.read) {
+            convo.unread++
+          }
+
+          // Unread messages for the other user
+          if (message.senderId !== convo.otherUser.id && !message.read) {
+            convo.otherUser.unread++
+          }
+        });
+      });
+    }
+
     dispatch(gotConversations(data));
   } catch (error) {
     console.error(error);
@@ -85,8 +107,7 @@ const saveMessage = async (body) => {
 };
 
 const updateMessagesToDB = async (body) => {
-  await axios.put("/api/messages", body);
-  return
+  return await axios.put("/api/messages", body);
 }
 
 const sendMessage = (data, body) => {
@@ -96,6 +117,13 @@ const sendMessage = (data, body) => {
     sender: data.sender,
   });
 };
+
+// Notify the other client that this current client has read all messages.
+const sendUpdate = (conversation) => {
+  socket.emit("update-message", {
+    conversation
+  });
+}
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
@@ -115,14 +143,15 @@ export const postMessage = (body) => async (dispatch) => {
   }
 };
 
-// format to send: { messages[], messagesToUpdate[], conversationId }
+// format to send: { usersId[], conversation }
 // messages contains all the conversation's messages.
 export const putMessages = (body) => async (dispatch) => {
   try {
-    const {messages, messagesToUpdate, conversationId} = body
+    const { usersId, conversation } = body
 
-    await updateMessagesToDB(messagesToUpdate);
-    dispatch(updateMessages(messages, conversationId))
+    await updateMessagesToDB({ usersId, conversationId: conversation.id });
+    const data = dispatch(updateMessages(conversation))
+    sendUpdate(data.payload.conversation)
   } catch (error) {
     console.error(error);
   }

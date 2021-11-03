@@ -45,21 +45,34 @@ router.post("/", async (req, res, next) => {
 });
 
 // Update a message's text OR a message's read status.
-router.put("/", (req, res, next) => { 
+router.put("/", async (req, res, next) => {
   try {
-    req.body.forEach( async message => {
-      await Message.update({
-        text: message.text,
-        read: message.read
-      }, 
-      { where: 
-        { 
-          id: message.id 
-        } 
-      });
+    if (!req.body.conversationId || !req.body.usersId) {
+      return res.sendStatus(400).json({error: "Missing conversation id or users' ids"});
+    }
+
+    const {conversationId, usersId} = req.body
+    let convo = await Conversation.findConversation(
+      usersId.currentUser,
+      usersId.otherUser
+    );
+
+    if (!convo || convo.dataValues.id !== conversationId) {
+      return res.status(403).json({error: "Conversation inexistant or wrong conversation id"})
+    }
+
+    await Message.update({
+      read: true
+    }, 
+    { where: 
+      { 
+        conversationId,
+        senderId: usersId.otherUser
+      },
+      returning: true
     });
 
-    return res.json({})
+    return res.status(204).json({})
   } catch (error) {
     next(error);
   }

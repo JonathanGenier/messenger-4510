@@ -35,10 +35,10 @@ export const setNewMessage = (message, sender) => {
   };
 };
 
-export const updateMessages = (messages, conversationId) => {
+export const updateMessages = (conversation) => {
   return {
     type: UPDATE_MESSAGES,
-    payload: { messages, conversationId },
+    payload: { conversation },
   };
 };
 

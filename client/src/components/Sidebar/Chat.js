@@ -24,15 +24,12 @@ const useStyles = makeStyles((theme) => ({
 const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
-  const { otherUser, messages } = conversation;
+  const { otherUser } = conversation;
 
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.username);
   };
 
-  // Get total of messages
-  // Get 
-  
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>
       <BadgeAvatar
@@ -42,10 +39,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
-      <UnreadCountBubble 
-        messages={messages} 
-        otherUser={otherUser}
-      />
+      <UnreadCountBubble conversation={conversation} />
     </Box>
   );
 };

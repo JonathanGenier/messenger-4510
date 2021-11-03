@@ -5,41 +5,48 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { putMessages } from "../../store/utils/thunkCreators";
 
+
 const Messages = (props) => {
   const { conversation, userId, putMessages } = props;
   const { messages, otherUser } = conversation
 
-  const handlePut = async (unreadMessages) => {
-    let reqBody = { 
-      messages, 
-      messagesToUpdate: unreadMessages, 
-      conversationId: conversation.id 
+  const handlePut = async () => {
+
+    let reqBody = {
+      conversation,
+      usersId: {
+        currentUser: userId,
+        otherUser: otherUser.id
+      },
     }
 
     await putMessages(reqBody);
   }
 
-  let unreadMessages = []
-  messages.forEach(message => {
-    if (message.senderId !== userId && !message.read) {
-      unreadMessages.push(message)
-      unreadMessages[unreadMessages.length - 1].read = true
-    }
-  });
-
-  if (unreadMessages.length > 0) {
-    handlePut(unreadMessages)
+  if (conversation.unread > 0) {
+    handlePut()
   }
 
   return (
     <Box>
       {messages.map((message) => {
         const time = moment(message.createdAt).format("h:mm");
+        let isLastMessage = messages.indexOf(message) === (messages.length - 1)
 
-        return message.senderId === userId ? (
-          <SenderBubble key={message.id} text={message.text} time={time} />
+        return message.senderId === userId ? (<>
+          <SenderBubble
+            key={message.id}
+            text={message.text}
+            time={time}
+            otherUser={otherUser}
+            isLastMessage={isLastMessage} />
+        </>
         ) : (
-          <OtherUserBubble key={message.id} text={message.text} time={time} otherUser={otherUser} />
+          <OtherUserBubble
+            key={message.id}
+            text={message.text}
+            time={time}
+            otherUser={otherUser} />
         );
       })}
     </Box>
