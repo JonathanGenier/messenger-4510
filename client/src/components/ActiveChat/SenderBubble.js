@@ -32,21 +32,15 @@ const SenderBubble = (props) => {
   const classes = useStyles();
   const { time, text, otherUser, isLastMessage } = props;
 
-  const renderAvatarNotification = () => {
-    if(isLastMessage && otherUser.unread === 0) {
-      return <AvatarNotification username={otherUser.username} photoUrl={otherUser.photoUrl} online={true} />
-    }
-
-    return <></>
-  }
-
   return (
     <Box className={classes.root}>
       <Typography className={classes.date}>{time}</Typography>
       <Box className={classes.bubble}>
         <Typography className={classes.text}>{text}</Typography>
       </Box>
-      {renderAvatarNotification()}
+      {(isLastMessage && otherUser.unread === 0) &&
+        <AvatarNotification username={otherUser.username} photoUrl={otherUser.photoUrl} online={true} />
+      }
     </Box>
   );
 };

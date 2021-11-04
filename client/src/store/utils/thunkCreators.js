@@ -107,7 +107,7 @@ const saveMessage = async (body) => {
 };
 
 const updateMessagesToDB = async (body) => {
-  return await axios.put("/api/messages", body);
+  return await axios.put("/api/messages/read-status", body);
 }
 
 const sendMessage = (data, body) => {

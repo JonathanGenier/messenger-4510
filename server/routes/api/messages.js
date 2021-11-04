@@ -45,10 +45,10 @@ router.post("/", async (req, res, next) => {
 });
 
 // Update a message's text OR a message's read status.
-router.put("/", async (req, res, next) => {
+router.put("/read-status", async (req, res, next) => {
   try {
     if (!req.body.conversationId || !req.body.usersId) {
-      return res.sendStatus(400).json({error: "Missing conversation id or users' ids"});
+      return res.sendStatus(400)
     }
 
     const {conversationId, usersId} = req.body
@@ -58,7 +58,7 @@ router.put("/", async (req, res, next) => {
     );
 
     if (!convo || convo.dataValues.id !== conversationId) {
-      return res.status(403).json({error: "Conversation inexistant or wrong conversation id"})
+      return res.sendStatus(403)
     }
 
     await Message.update({
@@ -72,7 +72,7 @@ router.put("/", async (req, res, next) => {
       returning: true
     });
 
-    return res.status(204).json({})
+    return res.sendStatus(204)
   } catch (error) {
     next(error);
   }
