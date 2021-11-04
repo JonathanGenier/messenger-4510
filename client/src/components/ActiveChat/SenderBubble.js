@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box, Typography } from "@material-ui/core";
+import AvatarNotification from './AvatarNotification'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -29,13 +30,17 @@ const useStyles = makeStyles(() => ({
 
 const SenderBubble = (props) => {
   const classes = useStyles();
-  const { time, text } = props;
+  const { time, text, otherUser, isLastMessage } = props;
+
   return (
     <Box className={classes.root}>
       <Typography className={classes.date}>{time}</Typography>
       <Box className={classes.bubble}>
         <Typography className={classes.text}>{text}</Typography>
       </Box>
+      {(isLastMessage && otherUser.unread === 0) &&
+        <AvatarNotification username={otherUser.username} photoUrl={otherUser.photoUrl} online={true} />
+      }
     </Box>
   );
 };

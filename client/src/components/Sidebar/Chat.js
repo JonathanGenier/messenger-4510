@@ -5,6 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
 
+import UnreadCountBubble from './UnreadCountBubble'
+
 const useStyles = makeStyles((theme) => ({
   root: {
     borderRadius: 8,
@@ -37,6 +39,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
+      <UnreadCountBubble conversation={conversation} />
     </Box>
   );
 };

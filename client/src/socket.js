@@ -2,6 +2,7 @@ import io from "socket.io-client";
 import store from "./store";
 import {
   setNewMessage,
+  updateMessages,
   removeOfflineUser,
   addOnlineUser,
 } from "./store/conversations";
@@ -18,8 +19,13 @@ socket.on("connect", () => {
   socket.on("remove-offline-user", (id) => {
     store.dispatch(removeOfflineUser(id));
   });
+
   socket.on("new-message", (data) => {
     store.dispatch(setNewMessage(data.message, data.sender));
+  });
+
+  socket.on("update-message", (data) => {
+    store.dispatch(updateMessages(data.conversation));
   });
 });
 
